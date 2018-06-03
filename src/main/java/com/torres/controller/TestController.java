@@ -1,5 +1,12 @@
 package com.torres.controller;
 
+import com.torres.common.ApplicationContextHelper;
+import com.torres.common.JsonData;
+import com.torres.dao.SysAclModuleMapper;
+import com.torres.model.SysAclModule;
+import com.torres.param.TestVo;
+import com.torres.util.BeanValidator;
+import com.torres.util.JsonMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,11 +21,23 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Slf4j
 public class TestController {
 
-    @RequestMapping("/hello")
+    @RequestMapping("/hello.json")
     @ResponseBody
-    public String test(){
+    public JsonData test(){
         log.info("hello");
-        return "hello,permission";
+//        throw new RuntimeException("test exception");
+        return JsonData.success("hello,permission");
     }
 
+    @RequestMapping("/validate.json")
+    @ResponseBody
+    public JsonData validate(TestVo vo){
+        log.info("validate");
+        SysAclModuleMapper moduleMapper= ApplicationContextHelper.popBean(SysAclModuleMapper.class);
+        SysAclModule module=moduleMapper.selectByPrimaryKey(1);
+        log.info(JsonMapper.obj2String(module));
+
+        BeanValidator.check(vo);
+        return JsonData.success("test validate");
+    }
 }
